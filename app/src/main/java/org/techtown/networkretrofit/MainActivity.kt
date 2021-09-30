@@ -2,6 +2,7 @@ package org.techtown.networkretrofit
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.techtown.networkretrofit.databinding.ActivityMainBinding
 import retrofit2.Call
@@ -17,30 +18,35 @@ class MainActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        with(binding){
+            val customAdapter = CustomAdapter()
+            recyclerView.adapter = customAdapter
+            recyclerView.layoutManager = LinearLayoutManager(baseContext)
 
-        val adapter = CustomAdapter()
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.github.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        binding.buttonRequest.setOnClickListener {
+            val retrofit = Retrofit.Builder()
+                    .baseUrl("https://api.github.com")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
             val githubService = retrofit.create(GithubService::class.java)
-            githubService.users().enqueue(object: Callback<Repository>{
-                override fun onFailure(call: Call<Repository>, t: Throwable) {
-                }
 
-                override fun onResponse(call: Call<Repository>, response: Response<Repository>) {
-                    adapter.userList = response.body() as Repository
-                    adapter.notifyDataSetChanged()
-                }
-            })
+            buttonRequest.setOnClickListener {
+                githubService.users().enqueue(object : Callback<Repository> {
+                    override fun onFailure(call: Call<Repository>, t: Throwable) {
+                        Log.e("매인 액티비티","${t.localizedMessage}")
+                    }
+
+                    override fun onResponse(call: Call<Repository>, response: Response<Repository>) {
+                        response.body()?.let {  result ->
+                            customAdapter.userList = result
+                            customAdapter.notifyDataSetChanged()
+                        }
+                    }
+                })
+            }
         }
     }
 }
 interface GithubService{
-    @GET("user/Kotlin/repos")
+    @GET("users/Kotlin/repos")
     fun users(): Call<Repository>
 }

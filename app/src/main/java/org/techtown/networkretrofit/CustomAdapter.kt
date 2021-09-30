@@ -14,7 +14,7 @@ class CustomAdapter: RecyclerView.Adapter<Holder>() {
     }
 
     override fun getItemCount(): Int {
-        return userList?.size?: 0
+        return userList?.size?:0
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
@@ -24,10 +24,12 @@ class CustomAdapter: RecyclerView.Adapter<Holder>() {
 }
 class Holder(val binding: ItemRecyclerBinding):RecyclerView.ViewHolder(binding.root){
     fun setUser(user: RepositoryItem?){
-        user?.let{
-            binding.textName.text = it.name
-            binding.textId.text = it.node_id
-            Glide.with(binding.imageAvatar).load(it.owner.avatar_url).into(binding.imageAvatar)
+        user?.let { user ->
+            with(binding) {
+                textName.text = user.full_name
+                textId.text = user.node_id
+                Glide.with(imageAvatar).load(user.owner.avatar_url).into(imageAvatar)
+            }
         }
     }
 
