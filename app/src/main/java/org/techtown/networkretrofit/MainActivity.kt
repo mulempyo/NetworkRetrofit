@@ -24,9 +24,9 @@ class MainActivity : AppCompatActivity(){
             recyclerView.layoutManager = LinearLayoutManager(baseContext)
 
             val retrofit = Retrofit.Builder()
-                    .baseUrl("https://api.github.com")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
+                .baseUrl("https://api.github.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
             val githubService = retrofit.create(GithubService::class.java)
 
             buttonRequest.setOnClickListener {
